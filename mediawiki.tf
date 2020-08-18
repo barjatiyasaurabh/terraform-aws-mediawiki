@@ -20,6 +20,7 @@ resource "aws_instance" "mediawiki" {
   ami           = "ami-01ca03df4a6012157"
   instance_type = "t2.micro"
   key_name = aws_key_pair.saurabh-labpc.key_name
+  vpc_security_group_ids = ["sg-099110fd1d8ddf519"]
   tags = {
     Name = "Mediawiki"
   }
@@ -38,6 +39,7 @@ resource "aws_instance" "mariadb" {
   ami           = "ami-01ca03df4a6012157"
   instance_type = "t2.micro"
   key_name = aws_key_pair.saurabh-labpc.key_name
+  vpc_security_group_ids = ["sg-099110fd1d8ddf519"]
   tags = {
     Name = "Mariadb"
   }
