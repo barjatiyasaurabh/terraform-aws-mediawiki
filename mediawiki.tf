@@ -48,6 +48,13 @@ resource "aws_security_group" "webserver" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+    description = "Mariadb from VPC"
+    from_port   = 0
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = [aws_default_vpc.default.cidr_block]
+  }
 
   egress {
     from_port   = 0
@@ -68,6 +75,15 @@ resource "aws_instance" "mediawiki" {
   vpc_security_group_ids = [aws_security_group.webserver.id]
   tags = {
     Name = "Mediawiki"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "yum -y install git",
+      "git clone https://github.com/barjatiyasaurabh/terraform-aws-mediawiki.git",
+      "cd terraform-aws-mediawiki"
+      "chmod +x setup_httpd.sh"
+      "./setup_httpd.sh ${aws_instance.mariadb.private_ip}",
+    ]
   }
   depends_on = [aws_instance.mariadb]
 }
