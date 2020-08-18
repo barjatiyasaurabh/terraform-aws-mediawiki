@@ -11,11 +11,6 @@ provider "aws" {
   region  = "us-east-1"
 }
 
-resource "aws_key_pair" "saurabh-labpc" {
-  key_name   = "saurabh-labpc"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAxvplzAxWC3DfOnbb7EMZCEOKiI5ALDLVFT56czeyKAO6MY5D1E79f74t1HmIHwpoAOekXdnu580zC7Ni5Wynk6M4YnPfHF2cs4hhMBFttxUWsrI3Cqfyb8zsjyddXKg0XbPj/BvlqA8SBHQX7DGd4gXTXJXHeySvu5y8Rd0f9mpzHYk9+lW06Q3uyON9jzL/PeRD8h8uHb1vqi6+V5R0ShHc1ptlDH90DKd3pgm/cer7WJHNlqsQybAf0ypcfqzDPtywgccTFgnfwnltb3WYCbXcMmrjLCXXrQ8qZMTkZzpnPVT3/FfmaaN9OCvG266kPU/O2s3zxeaaHRWq2aESIQ== saurabh@labpc"
-}
-
 resource "aws_key_pair" "terraform" {
   key_name   = "terraform"
   public_key = file("terraform.pub")
@@ -69,7 +64,7 @@ resource "aws_security_group" "webserver" {
   }
 
   tags = {
-    Name = "allow_tls"
+    Name = "Webserver-SG"
   }
 }
 
@@ -88,7 +83,7 @@ resource "aws_instance" "mediawiki" {
     host        = self.public_ip
   }
   provisioner "local-exec" {
-    command = "echo ${aws_instance.mediawiki.public_ip} > mediawiki-public-ip.txt"
+    command = "echo ${aws_eip.mediawiki-ip.public_ip} > mediawiki-public-ip.txt"
   }
   provisioner "file" {
     source      = "mysql-root-password"
@@ -104,7 +99,7 @@ resource "aws_instance" "mediawiki" {
       "./setup_httpd.sh ${aws_instance.mariadb.private_ip}"
     ]
   }
-  depends_on = [aws_instance.mariadb]
+  depends_on = [aws_instance.mariadb,aws_eip.mediawiki-ip]
 }
 
 resource "aws_eip" "mediawiki-ip" {

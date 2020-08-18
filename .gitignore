@@ -4,3 +4,5 @@ terraform.pub
 terraform.tfstate*
 .terraform.tfstate*
 mysql-root-password
+mariadb-private-ip.txt
+mediawiki-public-ip.txt
