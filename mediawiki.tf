@@ -76,13 +76,20 @@ resource "aws_instance" "mediawiki" {
   tags = {
     Name = "Mediawiki"
   }
+  connection {
+    type        = "ssh"
+    user        = "centos"
+    private_key = file("~/.ssh/id_rsa")
+    host        = self.public_ip
+  }
+  provisioner "file" {
+    source      = "setup_httpd.sh"
+    destination = "/root/setup_httpd.sh"
+  }
   provisioner "remote-exec" {
     inline = [
-      "yum -y install git",
-      "git clone https://github.com/barjatiyasaurabh/terraform-aws-mediawiki.git",
-      "cd terraform-aws-mediawiki"
-      "chmod +x setup_httpd.sh"
-      "./setup_httpd.sh ${aws_instance.mariadb.private_ip}",
+      "chmod +x /root/setup_httpd.sh",
+      "/root/setup_httpd.sh ${aws_instance.mariadb.private_ip}"
     ]
   }
   depends_on = [aws_instance.mariadb]
