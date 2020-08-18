@@ -87,18 +87,21 @@ resource "aws_instance" "mediawiki" {
     private_key = file("terraform")
     host        = self.public_ip
   }
+  provisioner "local-exec" {
+    command = "echo ${aws_instance.mediawiki.public_ip} > mediawiki-public-ip.txt"
+  }
   provisioner "file" {
     source      = "mysql-root-password"
-    destination = "/root/mysql-root-password"
+    destination = "mysql-root-password"
   }
   provisioner "file" {
     source      = "setup_httpd.sh"
-    destination = "/root/setup_httpd.sh"
+    destination = "setup_httpd.sh"
   }
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /root/setup_httpd.sh",
-      "/root/setup_httpd.sh ${aws_instance.mariadb.private_ip}"
+      "chmod +x setup_httpd.sh",
+      "./setup_httpd.sh ${aws_instance.mariadb.private_ip}"
     ]
   }
   depends_on = [aws_instance.mariadb]
@@ -126,18 +129,21 @@ resource "aws_instance" "mariadb" {
     private_key = file("terraform")
     host        = self.public_ip
   }
+  provisioner "local-exec" {
+    command = "echo ${aws_instance.mariadb.private_ip} > mariadb-private-ip.txt"
+  }
   provisioner "file" {
     source      = "mysql-root-password"
-    destination = "/root/mysql-root-password"
+    destination = "mysql-root-password"
   }
   provisioner "file" {
     source      = "setup_mariadb.sh"
-    destination = "/root/setup_mariadb.sh"
+    destination = "setup_mariadb.sh"
   }
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /root/setup_mariadb.sh",
-      "/root/setup_mariadb.sh"
+      "chmod +x setup_mariadb.sh",
+      "./setup_mariadb.sh"
     ]
   }
 }
