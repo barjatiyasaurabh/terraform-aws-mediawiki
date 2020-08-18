@@ -82,9 +82,9 @@ resource "aws_instance" "mediawiki" {
     private_key = file("terraform")
     host        = self.public_ip
   }
-  provisioner "local-exec" {
-    command = "echo ${aws_eip.mediawiki-ip.public_ip} > mediawiki-public-ip.txt"
-  }
+#  provisioner "local-exec" {
+#    command = "echo ${aws_eip.mediawiki-ip.public_ip} > mediawiki-public-ip.txt"
+#  }
   provisioner "file" {
     source      = "mysql-root-password"
     destination = "mysql-root-password"
@@ -99,7 +99,7 @@ resource "aws_instance" "mediawiki" {
       "./setup_httpd.sh ${aws_instance.mariadb.private_ip}"
     ]
   }
-  depends_on = [aws_instance.mariadb,aws_eip.mediawiki-ip]
+  depends_on = [aws_instance.mariadb]
 }
 
 resource "aws_eip" "mediawiki-ip" {
@@ -142,4 +142,6 @@ resource "aws_instance" "mariadb" {
     ]
   }
 }
+
+
 
