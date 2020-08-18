@@ -18,3 +18,12 @@ resource "aws_instance" "mediawiki" {
     Name = "Mediawiki"
   }
 }
+
+resource "aws_eip" "mediawiki-ip" {
+    vpc = true
+    instance = aws_instance.mediawiki.id
+    tags = {
+      Name = "Mediawiki-EIP"
+    }
+}
+
