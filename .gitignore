@@ -1,3 +1,6 @@
+terraform
+terraform.pub
 .terraform
 terraform.tfstate*
-terraform.tfstate.*
+.terraform.tfstate*
+mysql-root-password
